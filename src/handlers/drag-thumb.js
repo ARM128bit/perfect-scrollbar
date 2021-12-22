@@ -1,34 +1,34 @@
-import * as CSS from '../lib/css';
-import * as DOM from '../lib/dom';
+import * as CSS from "../lib/css";
+import * as DOM from "../lib/dom";
 import cls, {
   addScrollingClass,
-  removeScrollingClass,
-} from '../lib/class-names';
-import updateGeometry from '../update-geometry';
-import { toInt } from '../lib/util';
+  removeScrollingClass
+} from "../lib/class-names";
+import updateGeometry from "../update-geometry";
+import { toInt } from "../lib/util";
 
 export default function(i) {
   bindMouseScrollHandler(i, [
-    'containerWidth',
-    'contentWidth',
-    'pageX',
-    'railXWidth',
-    'scrollbarX',
-    'scrollbarXWidth',
-    'scrollLeft',
-    'x',
-    'scrollbarXRail',
+    "containerWidth",
+    "contentWidth",
+    "pageX",
+    "railXWidth",
+    "scrollbarX",
+    "scrollbarXWidth",
+    "scrollLeft",
+    "x",
+    "scrollbarXRail"
   ]);
   bindMouseScrollHandler(i, [
-    'containerHeight',
-    'contentHeight',
-    'pageY',
-    'railYHeight',
-    'scrollbarY',
-    'scrollbarYHeight',
-    'scrollTop',
-    'y',
-    'scrollbarYRail',
+    "containerHeight",
+    "contentHeight",
+    "pageY",
+    "railYHeight",
+    "scrollbarY",
+    "scrollbarYHeight",
+    "scrollTop",
+    "y",
+    "scrollbarYRail"
   ]);
 }
 
@@ -43,7 +43,7 @@ function bindMouseScrollHandler(
     scrollbarYHeight,
     scrollTop,
     y,
-    scrollbarYRail,
+    scrollbarYRail
   ]
 ) {
   const element = i.element;
@@ -62,7 +62,7 @@ function bindMouseScrollHandler(
     updateGeometry(i);
 
     e.stopPropagation();
-    if (e.type.startsWith('touch') && e.changedTouches.length > 1) {
+    if (e.type.startsWith("touch") && e.changedTouches.length > 1) {
       e.preventDefault();
     }
   }
@@ -70,9 +70,11 @@ function bindMouseScrollHandler(
   function mouseUpHandler() {
     removeScrollingClass(i, y);
     i[scrollbarYRail].classList.remove(cls.state.clicking);
-    i.event.unbind(i.ownerDocument, 'mousemove', mouseMoveHandler);
+    i.event.unbind(i.ownerDocument, "mousemove", mouseMoveHandler);
   }
-
+  function unbindTouch() {
+    i.event.unbind(i.ownerDocument, "touchmove", mouseMoveHandler);
+  }
   function bindMoves(e, touchMode) {
     startingScrollTop = element[scrollTop];
     if (touchMode && e.touches) {
@@ -83,11 +85,12 @@ function bindMouseScrollHandler(
       (i[contentHeight] - i[containerHeight]) /
       (i[railYHeight] - i[scrollbarYHeight]);
     if (!touchMode) {
-      i.event.bind(i.ownerDocument, 'mousemove', mouseMoveHandler);
-      i.event.once(i.ownerDocument, 'mouseup', mouseUpHandler);
+      i.event.bind(i.ownerDocument, "mousemove", mouseMoveHandler);
+      i.event.once(i.ownerDocument, "mouseup", mouseUpHandler);
       e.preventDefault();
     } else {
-      i.event.bind(i.ownerDocument, 'touchmove', mouseMoveHandler);
+      i.event.bind(i.ownerDocument, "touchmove", mouseMoveHandler);
+      i.event.once(i.ownerDocument, "touchend", unbindTouch);
     }
 
     i[scrollbarYRail].classList.add(cls.state.clicking);
@@ -95,10 +98,10 @@ function bindMouseScrollHandler(
     e.stopPropagation();
   }
 
-  i.event.bind(i[scrollbarY], 'mousedown', e => {
+  i.event.bind(i[scrollbarY], "mousedown", e => {
     bindMoves(e);
   });
-  i.event.bind(i[scrollbarY], 'touchstart', e => {
+  i.event.bind(i[scrollbarY], "touchstart", e => {
     bindMoves(e, true);
   });
 }
